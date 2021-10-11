@@ -10,10 +10,12 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import { Button } from "@mui/material";
+import { ChromePicker } from "react-color";
 
 
 
-const drawerWidth = 240;
+const drawerWidth = 400;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
@@ -42,7 +44,7 @@ const AppBar = styled(MuiAppBar, {
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
-    width: `calc(100% - ${drawerWidth}px)`,
+    width: `calChromePickerc(100% - ${drawerWidth}px)`,
     marginLeft: `${drawerWidth}px`,
     transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.easeOut,
@@ -64,8 +66,13 @@ class NewPaletteForm extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            open: false
+            open: false,
+            currColor: 'purple',
+            colors: ['purple', 'orange']
         }
+
+        this.changeColor = this.changeColor.bind(this)
+        this.addNewColor = this.addNewColor.bind(this)
     }
 
     handleDrawerOpen = () => {
@@ -75,6 +82,15 @@ class NewPaletteForm extends Component {
     handleDrawerClose = () => {
         this.setState({open: false})
     };
+
+    changeColor(newColor) {
+        console.log(newColor)
+        this.setState({currColor: newColor.hex})
+    }
+
+    addNewColor() {
+        this.setState({colors: [...this.state.colors, this.state.currColor]})
+    }
 
   render() {
     const { open } = this.state
@@ -116,13 +132,29 @@ class NewPaletteForm extends Component {
               </IconButton>
             </DrawerHeader>
             <Divider />
-            <Divider />
+            <Typography variant="h5">Design Your Palette</Typography>
+            <div>
+                <Button variant="contained" color="secondary">Clear Palette</Button>
+                <Button variant="contained" color="primary">Random Palette</Button>
+            </div>
+            <ChromePicker 
+                color={this.state.currColor}
+                onChangeComplete={this.changeColor}
+            />
+            <Button 
+                variant="contained" 
+                color="primary" 
+                style={{backgroundColor: this.state.currColor}}
+                onClick={this.addNewColor}
+                >
+                    Add Color
+            </Button>
           </Drawer>
           <Main open={open}>
             <DrawerHeader />
-            <p>
-            Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper
-            </p>
+            { this.state.colors.map(color => (
+                <li style={{backgroundColor: color}}>{color}</li>
+            )) }
           </Main>
         </Box>
       );
